@@ -16,17 +16,17 @@ task referencepanel {
 	command <<<
 
 		## keep only SNPs and remove multiallelic records
-		bcftools view -m 2 -M 2 -v snps ${"-s " + exclude_samples} --threads 4 ${thousg_vcf} -Ob -o 1000GP.chr${chr}.subset.bcf
+		bcftools view -m 2 -M 2 -v snps ${"-s " + exclude_samples} --threads 4 ${thousg_vcf} -Ob -o thousGP.chr${chr}.subset.bcf
 
 		## index the vcf output
-		bcftools index -f 1000GP.chr${chr}.subset.bcf
+		bcftools index -f thousGP.chr${chr}.subset.bcf
 
 
 	>>>
 
 	output {
-		File refpanel_curated = "$1000GP.chr${chr}.subset.bcf"
-		File refpanel_curated_index = "1000GP.chr${chr}.subset.bcf.csi"
+		File refpanel_curated = "$thousGP.chr${chr}.subset.bcf"
+		File refpanel_curated_index = "thousGP.chr${chr}.subset.bcf.csi"
 	}
 
 	runtime {
