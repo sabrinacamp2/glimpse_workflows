@@ -7,7 +7,7 @@ task referencepanel {
 	File thousg_vcf
 	File thousg_vcf_idx
 	File? exclude_samples
-	String chr
+	String name = basename(thousg_vcf, "_shapeit2_mvncall_integrated_v5a.​20130502.​genotypes.​vcf.​gz")
 	Int diskSpaceGb
 	Int memoryGb
 	Int preemptible
@@ -16,17 +16,17 @@ task referencepanel {
 	command <<<
 
 		## keep only SNPs and remove multiallelic records
-		bcftools view -m 2 -M 2 -v snps ${"-s " + exclude_samples} --threads 4 ${thousg_vcf} -Ob -o thousGP.chr${chr}.subset.bcf
+		bcftools view -m 2 -M 2 -v snps ${"-s " + exclude_samples} --threads 4 ${thousg_vcf} -Ob -o thousGP.${name}.subset.bcf
 
 		## index the vcf output
-		bcftools index -f thousGP.chr${chr}.subset.bcf
+		bcftools index -f thousGP.${name}.subset.bcf
 
 
 	>>>
 
 	output {
-		File refpanel_curated = "$thousGP.chr${chr}.subset.bcf"
-		File refpanel_curated_index = "thousGP.chr${chr}.subset.bcf.csi"
+		File refpanel_curated = "thousGP.${name}.subset.bcf"
+		File refpanel_curated_index = "thousGP.${name}.subset.bcf.csi"
 	}
 
 	runtime {
