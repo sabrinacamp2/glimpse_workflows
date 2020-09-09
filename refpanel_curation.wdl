@@ -1,0 +1,36 @@
+workflow referencepanel_workflow {
+	call referencepanel {
+	}
+}
+
+task referencepanel {
+	File? exclude_samples
+	String chr
+	Int diskSpaceGb
+	Int memoryGb
+	Int preemptible
+
+
+	command <<<
+
+		## keep only SNPs and remove multiallelic records
+		bcftools view -m 2 -M 2 -v snps ${"-s " + exclude_samples} --threads 4 -Ob -o 1000GP.chr${chr}.subset.bcf
+
+		## index the vcf output
+		bcftools index -f 1000GP.chr${chr}.subset.bcf
+
+
+	>>>
+
+	output {
+		File refpanel_curated = "$1000GP.chr${chr}.subset.bcf"
+		File refpanel_curated_index = "1000GP.chr${chr}.subset.bcf.csi"
+	}
+
+	runtime {
+		docker: "quay.io/biocontainers/bcftools:1.9--ha228f0b_3"
+		memory: "${memoryGb} GB"
+		disks: "local-disk ${diskSpaceGb} HDD"
+		preemptible: "${preemptible}"
+	}
+}
