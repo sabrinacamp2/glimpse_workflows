@@ -1,0 +1,51 @@
+workflow gtlikelihoods_workflow {
+	Array[File] refpanel_sitestsv = ${refpanel_sitestsv}
+	Array[File] refpanel_sitesvcf = ${refpanel_sitesvcf}
+	Array[Pair[File, File]] zipped = zip(refpanel_sitestsv, refpanel_sitesvcf)
+
+	scatter (sites in zipped) {
+		call gtlikelihoods {
+			input: sitesvcf = zipped.right,
+					sitestsv = zipped.left
+	}
+	}
+	
+}
+
+task gtlikelihoods {
+	
+	File refpanel_curated
+	File refpanel_curated_index
+	String name = basename(refpanel_curated, ".subset.bcf")
+	Int diskSpaceGb
+	Int memoryGb
+	Int preemptible
+
+
+	command <<<
+
+		## get a snp only vcf
+		bcftools view -G -m 2 -M 2 -v snps ${refpanel_curated} -Oz -o thousGP.${name}.sites.vcf.gz
+		bcftools index -f thousGP.${name}.sites.vcf.gz
+
+		## get the snp only vcf in a tsv format 
+		bcftools query -f'%CHROM\t%POS\t%REF,%ALT\n' thousGP.${name}.sites.vcf.gz | bgzip -c > thousGP.${name}.sites.tsv.gz
+		tabix -s1 -b2 -e2 thousGP.${name}.sites.tsv.gz
+
+
+	>>>
+
+	output {
+		File refpanel_sitesvcf = "thousGP.${name}.sites.vcf.gz"
+		File refpanel_sitesvcf_index = "thousGP.${name}.sites.vcf.gz.tbi"
+		File refpanel_sitestsv = "thousGP.${name}.sites.tsv.gz"
+		File refpanel_sitestsv_index = "thousGP.${name}.sites.tsv.gz.tbi"
+	}
+
+	runtime {
+		docker: "vanallenlab/samtools_bcftools_htslib:1.9"
+		memory: "${memoryGb} GB"
+		disks: "local-disk ${diskSpaceGb} HDD"
+		preemptible: "${preemptible}"
+	}
+}
