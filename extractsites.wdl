@@ -33,7 +33,7 @@ task extractsites {
 	}
 
 	runtime {
-		docker: "quay.io/biocontainers/bcftools:1.9--ha228f0b_3"
+		docker: "vanallenlab/samtools_bcftools_htslib:1.9"
 		memory: "${memoryGb} GB"
 		disks: "local-disk ${diskSpaceGb} HDD"
 		preemptible: "${preemptible}"
