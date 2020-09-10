@@ -1,12 +1,13 @@
 workflow gtlikelihoods_workflow {
 	Array[File] refpanel_sitestsv = ${refpanel_sitestsv}
 	Array[File] refpanel_sitesvcf = ${refpanel_sitesvcf}
-	Array[Pair[File, File]] zipped = zip(refpanel_sitestsv, refpanel_sitesvcf)
+	Array[String] chr = ['chr1', 'chr10', 'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chrX']
 
-	scatter (sites in zipped) {
+	scatter(pair in zip(zip(refpanel_sitestsv, refpanel_sitesvcf), chr)){
 		call gtlikelihoods {
-			input: sitesvcf = zipped.right,
-					sitestsv = zipped.left
+			input: sitesvcf = pair.left.right,
+					sitestsv = pair.left.left,
+					chr_names = pair.right
 	}
 	}
 	
@@ -14,9 +15,14 @@ workflow gtlikelihoods_workflow {
 
 task gtlikelihoods {
 	
-	File refpanel_curated
-	File refpanel_curated_index
-	String name = basename(refpanel_curated, ".subset.bcf")
+	File samplebam
+	File sitesvcf
+	File sitestsv
+	String chr_names
+	File reffasta
+	File refdict
+	File refidx
+	String sampleid
 	Int diskSpaceGb
 	Int memoryGb
 	Int preemptible
@@ -24,22 +30,15 @@ task gtlikelihoods {
 
 	command <<<
 
-		## get a snp only vcf
-		bcftools view -G -m 2 -M 2 -v snps ${refpanel_curated} -Oz -o thousGP.${name}.sites.vcf.gz
-		bcftools index -f thousGP.${name}.sites.vcf.gz
-
-		## get the snp only vcf in a tsv format 
-		bcftools query -f'%CHROM\t%POS\t%REF,%ALT\n' thousGP.${name}.sites.vcf.gz | bgzip -c > thousGP.${name}.sites.tsv.gz
-		tabix -s1 -b2 -e2 thousGP.${name}.sites.tsv.gz
-
+		## compute genotype likelihoods
+		bcftools mpileup -f ${reffasta} -I -E -a 'FORMAT/DP' -T ${sitesvcf} -r ${chr_names} ${samplebam} -Ou | bcftools call -Aim -C alleles -T ${sitestsv} -Oz -o ${sampleid}.${chr_name}.vcf.gz
+		bcftools index -f ${sampleid}.${chr_name}.vcf.gz
 
 	>>>
 
 	output {
-		File refpanel_sitesvcf = "thousGP.${name}.sites.vcf.gz"
-		File refpanel_sitesvcf_index = "thousGP.${name}.sites.vcf.gz.tbi"
-		File refpanel_sitestsv = "thousGP.${name}.sites.tsv.gz"
-		File refpanel_sitestsv_index = "thousGP.${name}.sites.tsv.gz.tbi"
+		File genotypelikelihood = "${sampleid}.${chr_name}.vcf.gz"
+		File genotypelikelihood_index = "thousGP.${name}.sites.vcf.gz.csi"
 	}
 
 	runtime {
