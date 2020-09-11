@@ -7,7 +7,7 @@ task referencepanel {
 	File thousg_vcf
 	File thousg_vcf_idx
 	File? exclude_samples
-	String name = basename(thousg_vcf, "_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz")
+	String name = basename(thousg_vcf, ".genotypes.vcf.gz")
 	Int diskSpaceGb
 	Int memoryGb
 	Int preemptible

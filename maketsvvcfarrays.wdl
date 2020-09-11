@@ -16,15 +16,18 @@ task makearrays {
 	command <<<
 
 		echo "please work"
-
+        mv ${sep = ' ' refpanel_sitestsv} /cromwell_root/
+        mv ${sep = ' ' refpanel_sitestsv_index} /cromwell_root/
+        mv ${sep = ' ' refpanel_sitesvcf} /cromwell_root/
+        mv ${sep = ' ' refpanel_sitesvcf_index} /cromwell_root/
 
 	>>>
 
 	output {
-		Array[File] refpanel_sitestsv = glob("*.tsv.gz")
-		Array[File] refpanel_sitestsv_index = glob("*.tsv.gz.tbi")
-		Array[File] refpanel_sitesvcf = glob(".vcf.gz")
-		Array[File] refpanel_sitesvcf_index = glob(".vcf.gz.tbi")
+		Array[File] refpanel_sitestsv_array = glob("*.tsv.gz")
+		Array[File] refpanel_sitestsv_index_array = glob("*.tsv.gz.tbi")
+		Array[File] refpanel_sitesvcf_array = glob("*.vcf.gz")
+		Array[File] refpanel_sitesvcf_index_array = glob("*.vcf.gz.csi")
 	}
 
 	runtime {
