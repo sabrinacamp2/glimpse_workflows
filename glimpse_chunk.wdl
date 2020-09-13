@@ -2,7 +2,7 @@ workflow glimpse_chunk_workflow {
 
 	Array[File] refpanel_sitesvcf_array
 	Array[File] refpanel_sitesvcf_index_array
-	Array[String] chr = ['1', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '3', '4', '5', '6', '7', '8', '9', 'X']
+	Array[String] chr = ['1', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '2', '3', '4', '5', '6', '7', '8', '9', 'X']
 
 call preparescatter {
 
@@ -49,8 +49,11 @@ task glimpse_chunk {
 
 
 	command <<<
+    
+    	ln -s ${sitesvcf} sites.vcf.gz
+        ln -s ${sitesvcfindex} sites.vcf.gz.csi
 
-		GLIMPSE_chunk --input sitesvcf --region ${chr_names} --window-size 2000000 --buffer-size 200000 --output chunks.${chr_names}.txt
+		GLIMPSE_chunk --input sites.vcf.gz --region ${chr_names} --window-size 2000000 --buffer-size 200000 --output chunks.${chr_names}.txt
 
 	>>>
 
