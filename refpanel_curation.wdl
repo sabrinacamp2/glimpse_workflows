@@ -10,6 +10,7 @@ task referencepanel {
 	String name = basename(thousg_vcf, ".genotypes.vcf.gz")
 	Int diskSpaceGb
 	Int memoryGb
+	Int cpu = 4
 	Int preemptible
 
 
@@ -33,6 +34,7 @@ task referencepanel {
 		docker: "quay.io/biocontainers/bcftools:1.9--ha228f0b_3"
 		memory: "${memoryGb} GB"
 		disks: "local-disk ${diskSpaceGb} HDD"
+		cpu: "${cpu}"
 		preemptible: "${preemptible}"
 	}
 }

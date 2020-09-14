@@ -75,6 +75,7 @@ task glimpse_phase {
 	File refpanel_curated
 	File refpanel_curated_index
 	Int memoryGb
+	Int cpu = 8
 	Int preemptible
     
     Int? diskspaceGB_buffer = 20
@@ -107,6 +108,7 @@ task glimpse_phase {
 	runtime {
 		docker: "vanallenlab/glimpse:1.0.1"
 		memory: "${memoryGb} GB"
+		cpu: "${cpu}"
 		disks: "local-disk ${diskspaceGB} HDD"
 		preemptible: "${preemptible}"
 	}
