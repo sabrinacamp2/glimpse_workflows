@@ -17,11 +17,12 @@ call preparescatter {
 
 scatter (idx in preparescatter.scatterIndices) {
 	call convertformat{
-		gnomad_af=gnomad_af[idx],
-		gnomad_af_index=gnomad_af_index[idx],
-		diskSpaceGb=diskSpaceGb,
-		memoryGb=memoryGb,
-		preemptible=preemptible
+		input:
+			gnomad_af=gnomad_af[idx],
+			gnomad_af_index=gnomad_af_index[idx],
+			diskSpaceGb=diskSpaceGb,
+			memoryGb=memoryGb,
+			preemptible=preemptible
 	}
     call glimpse_concordance {
         input:
