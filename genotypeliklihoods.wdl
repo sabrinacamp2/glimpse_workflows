@@ -3,7 +3,7 @@ workflow gtlikelihoods_workflow {
     Array[File] refpanel_sitestsv_index
 	Array[File] refpanel_sitesvcf
     Array[File] refpanel_sitesvcf_index
-	Array[String] chr = ['1', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '2', '3', '4', '5', '6', '7', '8', '9', 'X']
+	Array[String] chr = ['1', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '2', '20', '21', '22', '3', '4', '5', '6', '7', '8', '9', 'X']
 
 
 call preparescatter {
@@ -56,9 +56,12 @@ task gtlikelihoods {
 	File refdict
 	File refidx
 	String sampleid
-	Int diskSpaceGb
 	Int memoryGb
 	Int preemptible
+    
+    Int? diskspaceGB_buffer = 20
+    Int? diskspaceGB = ceil(size(samplebam, "G") + size(samplebam_index, "G") + size(sitesvcf, "G")  
+                             + diskspaceGB_buffer)
 
 
 	command <<<
@@ -84,7 +87,7 @@ task gtlikelihoods {
 	runtime {
 		docker: "vanallenlab/samtools_bcftools_htslib:1.9"
 		memory: "${memoryGb} GB"
-		disks: "local-disk ${diskSpaceGb} HDD"
+		disks: "local-disk ${diskspaceGB} HDD"
 		preemptible: "${preemptible}"
 	}
 }
