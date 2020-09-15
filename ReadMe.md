@@ -1,5 +1,6 @@
 ## GLIMPSE
 this repo is to store all the WDLs needed to run GLIMPSE.
+- following the GLIMPSE tutorial to make these methods https://odelaneau.github.io/GLIMPSE/tutorial.html#run_preliminaries
 - *docker*: https://hub.docker.com/repository/docker/vanallenlab/glimpse
 
 ### reference files (hg19)
