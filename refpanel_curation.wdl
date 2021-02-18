@@ -6,7 +6,7 @@ workflow referencepanel_workflow {
 task referencepanel {
 	File thousg_vcf
 	File thousg_vcf_idx
-	File? exclude_samples
+	File? keep_samples
 	String name = basename(thousg_vcf, ".genotypes.vcf.gz")
 	Int diskSpaceGb
 	Int memoryGb
@@ -17,7 +17,7 @@ task referencepanel {
 	command <<<
 
 		## keep only SNPs and remove multiallelic records
-		bcftools view -m 2 -M 2 -v snps ${"-s " + exclude_samples} --threads 4 ${thousg_vcf} -Ob -o thousGP.${name}.subset.bcf
+		bcftools view -m 2 -M 2 -v snps ${"-S " + keep_samples} --threads 4 ${thousg_vcf} -Ob -o thousGP.${name}.subset.bcf
 
 		## index the vcf output
 		bcftools index -f thousGP.${name}.subset.bcf
